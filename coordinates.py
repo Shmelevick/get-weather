@@ -35,7 +35,7 @@ def _round_coordinates(coordinates: Coordinates) -> Coordinates:
     if not config.USE_ROUNDED_COORDS:
         return coordinates
     latitude, longitude = map(
-        lambda c: round(c, 1),
+        lambda c: round(c, 2),
         (coordinates.latitude, coordinates.longitude)
     )
     return Coordinates(longitude=longitude, latitude=latitude)
