@@ -18,7 +18,7 @@ class JSONFileWeatherStorage:
         self._jsonfile = jsonfile
         self._init_storage()
 
-    def save(self, weather:Weather) -> None:
+    def save(self, weather: Weather) -> None:
         history = self._read_history()
         history.append(
             {
@@ -49,6 +49,7 @@ class WeatherStorage(Protocol):
     def save(self, weather: Weather) -> None:
         raise NotImplementedError
     
+
 class PlainFileWeatherStorage:
     """Store weather in plain text file"""
     def __init__(self, file: Path):
@@ -60,6 +61,7 @@ class PlainFileWeatherStorage:
         with open(self._file, 'a') as f:
             f.write(f'{now}\n{formatted_weather}\n')
     
+
 def save_weather(weather: Weather, storage: WeatherStorage) -> None:
     """Save weather in the storage"""
     storage.save(weather)

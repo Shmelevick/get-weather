@@ -1,17 +1,19 @@
-import json, ssl, urllib.request, requests
+import json
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Literal, TypeAlias
 from enum import Enum
 from json.decoder import JSONDecodeError
+from typing import Literal, TypeAlias
 from urllib.error import URLError
+
+import requests
 
 import config
 from coordinates import Coordinates
 from exceptions import ApiServiceError
 
-
 Celsius: TypeAlias = int
+
 
 class WeatherType(str, Enum):
     THUNDERSTORM = "Гроза!"
@@ -31,6 +33,7 @@ class Weather:
     sunset: datetime
     city: str
 
+
 def get_weather(coordinates: Coordinates) -> Weather:
     '''Requests weather in OpenWeather API and returns it'''
     openweather_response = _get_openweather_response(
@@ -39,6 +42,7 @@ def get_weather(coordinates: Coordinates) -> Weather:
     )
     weather = _parse_openweather_response(openweather_response)
     return weather
+
 
 def _get_openweather_response(latitude: float, longitude: float) -> str:
     # ssl._create_default_https_context = ssl._create_unverified_context
@@ -54,6 +58,7 @@ def _get_openweather_response(latitude: float, longitude: float) -> str:
     except URLError:
         raise ApiServiceError
     
+
 def _parse_openweather_response(openweather_response: str) -> Weather:
     try:
         openweather_dict = json.loads(openweather_response)
@@ -67,8 +72,10 @@ def _parse_openweather_response(openweather_response: str) -> Weather:
         city=_parse_city(openweather_dict)
     )
 
+
 def _parse_temperature(openweather_dict: dict) -> Celsius:
     return round(openweather_dict['main']['temp'])
+
 
 def _parse_weather_type(openweather_dict: dict) -> WeatherType:
     try:
@@ -89,14 +96,17 @@ def _parse_weather_type(openweather_dict: dict) -> WeatherType:
             return _weather_type
     raise ApiServiceError
 
+
 def _parse_sun_time(
         openweather_dict: dict,
         time: Literal['sunrise'] | Literal['sunset']
     ) -> datetime:
     return datetime.fromtimestamp(openweather_dict['sys'][time])
 
+
 def _parse_city(openweather_dict: dict) -> str:
     return openweather_dict['name']
 
-if __name__== '__main__':
+
+if __name__ == '__main__':
     print(get_weather(Coordinates(latitude=1, longitude=2)))

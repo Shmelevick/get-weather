@@ -1,7 +1,8 @@
+from dataclasses import dataclass
+from subprocess import PIPE, Popen
+
 import requests
 from bs4 import BeautifulSoup
-from dataclasses import dataclass
-from subprocess import Popen, PIPE
 
 import config
 from exceptions import CantGetCoordinates
@@ -18,6 +19,7 @@ def get_gps_coordinates() -> Coordinates:
     coordinates = _get_coreloccli_coordinates()
     return _round_coordinates(coordinates)
 
+
 def _get_coreloccli_coordinates() -> Coordinates:
     process = Popen(['CoreLocationCLI'], stdout=PIPE, stderr=PIPE)
     (output, err) = process.communicate()
@@ -30,6 +32,7 @@ def _get_coreloccli_coordinates() -> Coordinates:
     except UnicodeDecodeError:
         raise CantGetCoordinates
     return Coordinates(longitude=longitude, latitude=latitude)
+
 
 def _round_coordinates(coordinates: Coordinates) -> Coordinates:
     if not config.USE_ROUNDED_COORDS:
@@ -83,6 +86,7 @@ def parse_gps_coordinates() -> Coordinates:
         "с использованием доступных парсеров."
     )
     
+
 if __name__ == '__main__':
     print(get_gps_coordinates())
 
