@@ -1,9 +1,16 @@
 #!/Users/corgo/Documents/python_stuff/get-weather/.venv/bin/python
+from pathlib import Path
+from json import JSONDecodeError
 
 from coordinates import get_gps_coordinates
 from weather_api_service import get_weather
 from weather_formatter import format_weather
 from exceptions import ApiServiceError, CantGetCoordinates
+from history import (
+    PlainFileWeatherStorage,
+    save_weather,
+    JSONFileWeatherStorage
+)
 
 
 def main():
@@ -16,6 +23,14 @@ def main():
         weather = get_weather(coordinates)
     except ApiServiceError:
         print('Не смог получить погоду у API-сервиса погоды')
+        exit(1)
+    try:
+        save_weather(
+            weather,
+            JSONFileWeatherStorage(Path.cwd() / 'history.json')
+        )
+    except JSONDecodeError as e:
+        print(f'Ошибка чтения JSON: {e}')
         exit(1)
     print(format_weather(weather))
 
